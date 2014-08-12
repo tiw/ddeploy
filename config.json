@@ -1,0 +1,5 @@
+{
+  "DOCKER_HOST": "10.6.1.39:5000",
+  "DOCKER_BASE_URL": "unix://var/run/docker.sock",
+  "DB_FILE": "./test.db"
+}
