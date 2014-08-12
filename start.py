@@ -15,6 +15,7 @@ def parser_config(conf):
 conf = parser_config('./config.json')
 DOCKER_HOST = conf['DOCKER_HOST']
 DOCKER_BASE_URL = conf['DOCKER_BASE']
+DATA_DIR = '/data'
 DB_FILE = conf['DB_FILE']
 
 
@@ -51,7 +52,6 @@ class DockerUtils:
 # input
 local_nginx_port = 8813
 root_dir = 'oms_staging'
-env = 'dyson'
 nginx_config_dir = ''
 
 
@@ -59,19 +59,21 @@ fpm_name = root_dir.replace('_', '-') + u'-fpm'
 nginx_name = root_dir.replace('_', '-') + u'-nginx'
 gearman_name = root_dir.replace('_', '-') + u'-gearman'
 cli_name = root_dir.replace('_', '-') + u'-cli'
+log_dir = DATA_DIR + '/logs/' + root_dir
+src_dir = DATA_DIR + '/src/' + root_dir
 
 config = {
     'fpm': [
-        ('/data/src/' + root_dir, '/data/www/oms'),
-        ('/data/logs/' + root_dir, '/data/logs/oms')
+        (src_dir, '/data/www/oms'),
+        (log_dir, '/data/logs/oms')
     ],
     'nginx': [
-        ('/data/src/' + root_dir, '/data/www/oms'),
-        ('/data/src/' + root_dir + nginx_config_dir, '/etc/nginx/sites-enabled'),
-        ('/data/logs/' + root_dir + '/nginx', '/data/logs/oms')
+        (src_dir, '/data/www/oms'),
+        (src_dir + nginx_config_dir, '/etc/nginx/sites-enabled'),
+        (log_dir, '/data/logs/oms')
     ],
     'cli': [
-        ('/data/src/' + root_dir, '/data/www/oms')
+        (src_dir + root_dir, '/data/www/oms')
     ]
 }
 
