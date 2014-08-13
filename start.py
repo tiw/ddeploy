@@ -14,7 +14,7 @@ def parser_config(conf):
 
 conf = parser_config('./config.json')
 DOCKER_HOST = conf['DOCKER_HOST']
-DOCKER_BASE_URL = conf['DOCKER_BASE']
+DOCKER_BASE_URL = conf['DOCKER_BASE_URL']
 DATA_DIR = '/data'
 DB_FILE = conf['DB_FILE']
 
@@ -69,7 +69,7 @@ config = {
     ],
     'nginx': [
         (src_dir, '/data/www/oms'),
-        (src_dir + nginx_config_dir, '/etc/nginx/sites-enabled'),
+        (src_dir + '/' + nginx_config_dir, '/etc/nginx/sites-enabled'),
         (log_dir, '/data/logs/oms')
     ],
     'cli': [
@@ -93,6 +93,7 @@ def buildFpm(name):
     fpm_container = d.createContainer(fpm_image, detach=True, name=name)
 
     binds = getVolumeMapping('fpm')
+    # TODO: give the option whether gearman is needed
     d.startContainer(fpm_container, binds=binds, links={gearman_name: "gearman"})
     return fpm_container
 
@@ -105,6 +106,7 @@ def buildCli(name):
     entry_point = ["/usr/bin/php", "/data/www/oms/service/src/bin/queue.php", "start"]
     cli_container = d.createContainer(cli_image, detach=True, name=name, entry_point=entry_point)
     binds = getVolumeMapping('cli')
+    # TODO: give the option whether gearman is needed
     d.startContainer(cli_container, binds=binds, links={gearman_name: "gearman"})
     return cli_container
 
@@ -139,7 +141,7 @@ con = lite.connect(DB_FILE)
 
 
 def save_sys_info(sys_name, id, name):
-    con.execute("INSERT INTO sys_infos VALUES(?, ?, ?)", (sys_name, id, name))
+    con.execute("INSERT INTO system_infos VALUES(?, ?, ?)", (sys_name, id, name))
 
 
 def persistSystem(sys_name, containers):
@@ -152,18 +154,19 @@ if __name__ == "__main__":
     containers = []
     try:
         gearman_container_id = buildGearman(gearman_name)
-        fpm_container_id = buildFpm(fpm_name)
-        nginx_container_id = buildNginx(nginx_name)
-        cli_container_id = buildCli(cli_name)
+        # fpm_container_id = buildFpm(fpm_name)
+        # nginx_container_id = buildNginx(nginx_name)
+        # cli_container_id = buildCli(cli_name)
         containers.append(gearman_container_id)
-        containers.append(fpm_container_id)
-        containers.append(nginx_container_id)
-        containers.append(cli_name)
+        # containers.append(fpm_container_id)
+        # containers.append(nginx_container_id)
+        # containers.append(cli_name)
         persistSystem(root_dir, [
-            (gearman_container_id, gearman_name),
-            (fpm_container_id, fpm_name),
-            (nginx_container_id, nginx_name),
-            (cli_container_id, cli_name)])
+            (gearman_container_id, gearman_name)
+            # (fpm_container_id, fpm_name),
+            # (nginx_container_id, nginx_name),
+            # (cli_container_id, cli_name)
+            ])
     except Exception as e:
         for container in containers:
             d.stopContainer(container)
