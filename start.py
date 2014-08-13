@@ -140,16 +140,19 @@ def buildNginx(name):
 con = lite.connect(DB_FILE)
 
 
-def save_sys_info(sys_name, id, name):
+def save_sys_info(sys_name, idh, name):
+    idh = idh[u'Id']
+    pprint((sys_name, idh, name))
     cur = con.cursor()
-    cur.execute("INSERT INTO system_infos VALUES(?, ?, ?)", (sys_name, id, name))
+    cur.execute("INSERT INTO system_infos VALUES(?, ?, ?)", (sys_name, idh, name))
     con.commit()
+
 
 
 def persistSystem(sys_name, containers):
     for container in containers:
-        (id, name) = container
-        save_sys_info(sys_name, id, name)
+        (idh, name) = container
+        save_sys_info(sys_name, idh, name)
 
 if __name__ == "__main__":
     d = DockerUtils()
