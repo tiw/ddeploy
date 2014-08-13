@@ -141,7 +141,9 @@ con = lite.connect(DB_FILE)
 
 
 def save_sys_info(sys_name, id, name):
-    con.execute("INSERT INTO system_infos VALUES(?, ?, ?)", (sys_name, id, name))
+    cur = con.cursor()
+    cur.execute("INSERT INTO system_infos VALUES(?, ?, ?)", (sys_name, id, name))
+    con.commit()
 
 
 def persistSystem(sys_name, containers):
