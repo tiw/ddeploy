@@ -80,7 +80,7 @@ class BaseController(controller.CementBaseController):
                     db.persist_system(root_dir, [(nginx_container_id, self.app.config.get('base', 'nginx_name'))])
                 elif app == 'cli':
                     cli_container_id = start.buildCli()
-                    containers.append(cli_name)
+                    containers.append(cli_container_id)
                     db.persist_system(root_dir, [(cli_container_id, self.app.config.get('base', 'cli_name'))])
         except Exception as e:
             for container in containers:
