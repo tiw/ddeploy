@@ -34,7 +34,6 @@ class DockerUtils:
         return images[0]
 
     def createContainer(self, image, detach=False, name=None, command=None, entry_point=None):
-        pprint(image)
         image_id = image['Id']
         return self.c.create_container(image_id, detach=detach, name=name, command=command, entrypoint=entry_point)
 
@@ -142,7 +141,6 @@ con = lite.connect(DB_FILE)
 
 def save_sys_info(sys_name, idh, name):
     idh = idh[u'Id']
-    pprint((sys_name, idh, name))
     cur = con.cursor()
     cur.execute("INSERT INTO system_infos VALUES(?, ?, ?)", (sys_name, idh, name))
     con.commit()
@@ -159,18 +157,18 @@ if __name__ == "__main__":
     containers = []
     try:
         gearman_container_id = buildGearman(gearman_name)
-        # fpm_container_id = buildFpm(fpm_name)
-        # nginx_container_id = buildNginx(nginx_name)
-        # cli_container_id = buildCli(cli_name)
+        fpm_container_id = buildFpm(fpm_name)
+        nginx_container_id = buildNginx(nginx_name)
+        cli_container_id = buildCli(cli_name)
         containers.append(gearman_container_id)
-        # containers.append(fpm_container_id)
-        # containers.append(nginx_container_id)
-        # containers.append(cli_name)
+        containers.append(fpm_container_id)
+        containers.append(nginx_container_id)
+        containers.append(cli_name)
         persistSystem(root_dir, [
-            (gearman_container_id, gearman_name)
-            # (fpm_container_id, fpm_name),
-            # (nginx_container_id, nginx_name),
-            # (cli_container_id, cli_name)
+            (gearman_container_id, gearman_name),
+            (fpm_container_id, fpm_name),
+            (nginx_container_id, nginx_name),
+            (cli_container_id, cli_name)
             ])
     except Exception as e:
         for container in containers:
