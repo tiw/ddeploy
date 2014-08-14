@@ -2,11 +2,15 @@
 # -*- coding: utf-8 -*-
 __author__ = 'wangting'
 
+from pprint import pprint
+
 from cement.core import foundation, controller
-from start import Start
+
+from commands.start import Start
+from commands.list import List
 from utils import DockerUtils, parser_config
 from db import Db
-from pprint import pprint
+
 
 conf = parser_config('./config.json')
 conf['DATA_DIR'] = '/data'
@@ -51,7 +55,12 @@ class BaseController(controller.CementBaseController):
 
     @controller.expose(help='List container group')
     def list(self):
-        self.app.log.info('list all container')
+        l = List(self.app.config)
+        cs = l.list_all()
+        for sys_name in cs.keys():
+            print(sys_name)
+            for d in cs[sys_name]:
+                print "\t\t %s \t %s \t%s" % d
 
     @controller.expose(help='Stop container group')
     def stop(self):
@@ -59,35 +68,34 @@ class BaseController(controller.CementBaseController):
 
     @controller.expose(help='Start a group of containers')
     def start(self):
-        start_list = ['gearman', 'fpm', 'nginx', 'cli']
+        start_list = ['gearman']#, 'fpm', 'nginx', 'cli']
         db = Db(self.app.config.get('base', 'DB_FILE'))
         containers = []
         start = Start(self.app.config)
         d = DockerUtils(self.app.config.get('base', 'DOCKER_BASE_URL'))
         try:
-            for app in start_list:
-                if app == 'gearman':
-                    gearman_container_id = start.buildGearman()
+            for app_name in start_list:
+                if app_name == 'gearman':
+                    gearman_container_id = start.build_gearman()
                     containers.append(gearman_container_id)
                     db.persist_system(root_dir, [(gearman_container_id, self.app.config.get('base', 'gearman_name'))])
-                elif app == 'fpm':
-                    fpm_container_id = start.buildFpm()
+                elif app_name == 'fpm':
+                    fpm_container_id = start.build_fpm()
                     containers.append(fpm_container_id)
                     db.persist_system(root_dir, [(fpm_container_id, self.app.config.get('base', 'fpm_name'))])
-                elif app == 'nginx':
-                    nginx_container_id = start.buildNginx()
+                elif app_name == 'nginx':
+                    nginx_container_id = start.build_nginx()
                     containers.append(nginx_container_id)
                     db.persist_system(root_dir, [(nginx_container_id, self.app.config.get('base', 'nginx_name'))])
-                elif app == 'cli':
-                    cli_container_id = start.buildCli()
+                elif app_name == 'cli':
+                    cli_container_id = start.build_cli()
                     containers.append(cli_container_id)
                     db.persist_system(root_dir, [(cli_container_id, self.app.config.get('base', 'cli_name'))])
         except Exception as e:
             for container in containers:
-                d.stopContainer(container)
-                d.removeContainer(container)
+                d.stop_container(container)
+                d.remove_container(container)
             pprint(["error", e])
-
 
 
 class DdApp(foundation.CementApp):
@@ -95,10 +103,9 @@ class DdApp(foundation.CementApp):
         label = 'Manage_Docker_in_group'
         base_controller = BaseController
 
-app = DdApp(config_defaults={'base':conf})
+app = DdApp(config_defaults={'base': conf})
 try:
     app.setup()
     app.run()
 finally:
     app.close()
-

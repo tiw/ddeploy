@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from pprint import pprint
-
 __author__ = 'wangting'
 
 import sqlite3 as lite
@@ -33,4 +31,16 @@ class Db:
         for container in containers:
             (idh, name) = container
             self.__save_sys_info(sys_name, idh, name)
+
+    def search_container(self):
+        self.con.row_factory = lite.Row
+        cur = self.con.cursor()
+        cur.execute("SELECT * FROM system_infos")
+        return cur.fetchall()
+
+    def get_containers(self, group_name):
+        self.con.row_factory = lite.Row
+        cur = self.con.cursor()
+        cur.execute("SELECT ContainerId FROM system_infos WHERE SystemName = ?", group_name)
+        return cur.fetchall()
 
