@@ -45,3 +45,7 @@ class Db:
         rows = cur.fetchall()
         return rows
 
+    def remove_by_container_id(self, container_id):
+        cur = self.con.cursor()
+        cur.execute("DELETE FROM system_infos where ContainerId=:container_id", {"container_id": container_id})
+        self.con.commit()

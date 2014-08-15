@@ -24,9 +24,17 @@ class Stop(DockerBase):
 
     def rm(self, group_name):
         rows = self.db.get_containers(group_name)
-        for row in rows:
-            container_id = row['ContainerId']
-            self.d.remove_container({'Id': container_id})
+
+        try:
+            for row in rows:
+                container_id = row['ContainerId']
+                self.d.remove_container({'Id': container_id})
+                self.db.remove_by_container_id(container_id)
+        except Exception as e:
+            pprint(e)
+
+
+
 
     def stop_and_rm(self, group_name):
         self.stop(group_name)
