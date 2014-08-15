@@ -41,6 +41,7 @@ class Db:
     def get_containers(self, group_name):
         self.con.row_factory = lite.Row
         cur = self.con.cursor()
-        cur.execute("SELECT ContainerId FROM system_infos WHERE SystemName = ?", group_name)
-        return cur.fetchall()
+        cur.execute("SELECT ContainerId FROM system_infos WHERE SystemName=:group_name", {'group_name': group_name})
+        rows = cur.fetchall()
+        return rows
 

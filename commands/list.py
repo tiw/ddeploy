@@ -31,7 +31,6 @@ class List(DockerBase):
             )
 
         return unified_list
-        # gather details from docker
         pass
 
     def list_group(self, group_name):
