@@ -9,6 +9,7 @@ from cement.core import foundation, controller
 from commands.start import Start
 from commands.list import List
 from commands.stop import Stop
+from commands.monitor import Monitor
 from utils import DockerUtils, parser_config
 from db import Db
 
@@ -55,6 +56,7 @@ class BaseController(controller.CementBaseController):
         description = 'List containers'
         arguments = [
             (['-g', '--group_name'], dict(action="store")),
+            (['-c', '--container_id'], dict(action="store")),
             (['-v', '--verbose'], dict(action="store_true"))
         ]
 
@@ -72,6 +74,12 @@ class BaseController(controller.CementBaseController):
         group_name = self.app.pargs.group_name
         sc = Stop(self.app.config)
         sc.stop(group_name=group_name)
+
+    @controller.expose(help='Monitoring the container')
+    def monitor(self):
+        container_id = self.app.pargs.container_id
+        m = Monitor(self.app.config)
+        m.monitor_container(container_id)
 
     @controller.expose(help='Remove containers in the group')
     def rm(self):

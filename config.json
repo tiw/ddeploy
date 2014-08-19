@@ -1,5 +1,9 @@
 {
-  "DOCKER_HOST": "10.6.1.39:5000",
-  "DOCKER_BASE_URL": "unix://var/run/docker.sock",
-  "DB_FILE": "./test.db"
+  "DOCKER_HOST": "<host>",
+  "DOCKER_BASE_URL": "<url>",
+  "DB_FILE": "<url>",
+  "SMTP_SERVER": "<smpt_server>",
+  "SMTP_USER": "<smtp_user>",
+  "SMTP_PASSWORD": "<pasword>",
+  "SMTP_FROM": "<from>"
 }
