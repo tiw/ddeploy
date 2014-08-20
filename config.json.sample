@@ -1,0 +1,11 @@
+{
+  "DOCKER_HOST": "10.6.1.39:5000",
+  "DOCKER_BASE_URL": "unix://var/run/docker.sock",
+  "DB_FILE": "./test.db",
+  "SMTP_SERVER": "smtp.ec3s.com",
+  "SMTP_USER": "service@ec3s.com",
+  "SMTP_PASSWORD": "bjec3s.com",
+  "SMTP_FROM": "noreply@ec3s.com",
+  "WATCH_EMAILS": ["e@ec3s.com", "f@qq.com"],
+  "WATCH_INTERVAL": 3
+}
