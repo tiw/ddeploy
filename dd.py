@@ -3,6 +3,7 @@
 __author__ = 'wangting'
 
 from pprint import pprint
+import os.path
 
 from cement.core import foundation, controller
 
@@ -12,9 +13,6 @@ from commands.stop import Stop
 from commands.monitor import Monitor
 from utils import DockerUtils, parser_config
 from db import Db
-
-
-import os.path
 _dir = os.path.dirname(os.path.abspath(__file__))
 conf = parser_config('%s/config.json' % _dir)
 conf['DATA_DIR'] = '/data'
