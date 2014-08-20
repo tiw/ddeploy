@@ -14,7 +14,9 @@ from utils import DockerUtils, parser_config
 from db import Db
 
 
-conf = parser_config('./config.json')
+import os.path
+_dir = os.path.dirname(os.path.abspath(__file__))
+conf = parser_config('%s/config.json' % _dir)
 conf['DATA_DIR'] = '/data'
 
 
