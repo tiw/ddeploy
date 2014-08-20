@@ -42,7 +42,7 @@ class Monitor(DockerBase):
         f = self.config.get('base', 'SMTP_FROM')
         subject = 'ALERT! Docker Monitoring'
 
-        message = """\From: %s\nTo: %s\nSubject: %s\n\n%s""" % (f, ", ".join(to), subject, text)
+        message = """From: %s\nTo: %s\nSubject: %s\n\n%s""" % (f, ", ".join(to), subject, text)
         try:
             server = smtplib.SMTP(self.config.get('base', 'SMTP_SERVER'))
             server.ehlo()

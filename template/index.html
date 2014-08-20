@@ -11,8 +11,65 @@
 <script>
 var smoothie = new SmoothieChart();
 smoothie.streamTo(document.getElementById("dashboard"));
-var line = new TimeSeries();
-smoothie.addTimeSeries(line);
+var cache = new TimeSeries();
+var rss = new TimeSeries();
+var rss_huge = new TimeSeries();
+var mapped_file = new TimeSeries();
+var writeback = new TimeSeries();
+var pgpgin = new TimeSeries();
+var pgpgout = new TimeSeries();
+var pgfault = new TimeSeries();
+var pgmajfault = new TimeSeries();
+var inactive_anon = new TimeSeries();
+var active_anon = new TimeSeries();
+var inactive_file = new TimeSeries();
+var active_file = new TimeSeries();
+var unevictable = new TimeSeries();
+var hierarchical_memory_limit = new TimeSeries();
+var total_cache = new TimeSeries();
+var total_rss = new TimeSeries();
+var total_rss_huge = new TimeSeries();
+var total_mapped_file = new TimeSeries();
+var total_writeback = new TimeSeries();
+var total_pgpgin = new TimeSeries();
+var total_pgpgout = new TimeSeries();
+var total_pgfault = new TimeSeries();
+var total_pgmajfault = new TimeSeries();
+var total_inactive_anon = new TimeSeries();
+var total_active_anon = new TimeSeries();
+var total_inactive_file = new TimeSeries();
+var total_active_file = new TimeSeries();
+var total_unevictable = new TimeSeries();
+
+smoothie.addTimeSeries(cache);
+smoothie.addTimeSeries(rss);
+smoothie.addTimeSeries(rss_huge);
+smoothie.addTimeSeries(mapped_file);
+smoothie.addTimeSeries(writeback);
+smoothie.addTimeSeries(pgpgin);
+smoothie.addTimeSeries(pgpgout);
+smoothie.addTimeSeries(pgfault);
+smoothie.addTimeSeries(pgmajfault);
+smoothie.addTimeSeries(inactive_anon);
+smoothie.addTimeSeries(active_anon);
+smoothie.addTimeSeries(inactive_file);
+smoothie.addTimeSeries(active_file);
+smoothie.addTimeSeries(unevictable);
+smoothie.addTimeSeries(hierarchical_memory_limit);
+smoothie.addTimeSeries(total_cache);
+smoothie.addTimeSeries(total_rss);
+smoothie.addTimeSeries(total_rss_huge);
+smoothie.addTimeSeries(total_mapped_file);
+smoothie.addTimeSeries(total_writeback);
+smoothie.addTimeSeries(total_pgpgin);
+smoothie.addTimeSeries(total_pgpgout);
+smoothie.addTimeSeries(total_pgfault);
+smoothie.addTimeSeries(total_pgmajfault);
+smoothie.addTimeSeries(total_inactive_anon);
+smoothie.addTimeSeries(total_active_anon);
+smoothie.addTimeSeries(total_inactive_file);
+smoothie.addTimeSeries(total_active_file);
+smoothie.addTimeSeries(total_unevictable);
 function run() {
     var ws = new WebSocket("ws://localhost:9908/ws");
     ws.onopen = function(evt) {
@@ -21,8 +78,36 @@ function run() {
     };
 
     ws.onmessage = function(evt) {
-        console.log(JSON.parse(evt.data).cache);
-        line.append(new Date().getTime(), JSON.parse(evt.data).cache);
+        data = JSON.parse(evt.data);
+        cache.append(new Date().getTime(), data.cache);
+        rss.append(new Date().getTime(), datai.rss);
+        rss_huge.append(new Date().getTime(), data.rss_huge);
+        mapped_file.append(new Date().getTime(), data.mapped_file);
+        writeback.append(new Date().getTime(), data.writeback);
+        pgpgin.append(new Date().getTime(), data.pgpgin);
+        pgpgout.append(new Date().getTime(), data.pgpgout);
+        pgfault.append(new Date().getTime(), data.pgfault);
+        pgmajfault.append(new Date().getTime(), data.pgmajfault);
+        inactive_anon.append(new Date().getTime(), data.inactive_anon);
+        active_anon.append(new Date().getTime(), data.active_anon);
+        inactive_file.append(new Date().getTime(), data.inactive_file);
+        active_file.append(new Date().getTime(), data.active_file);
+        unevictable.append(new Date().getTime(), data.unevictable);
+        hierarchical_memory_limit.append(new Date().getTime(), data.hierachical_memory_limit);
+        total_cache.append(new Date().getTime(), data.total_cache);
+        total_rss.append(new Date().getTime(), data.total_rss);
+        total_rss_huge.append(new Date().getTime(), data.total_rss_huge);
+        total_mapped_file.append(new Date().getTime(), data.total_mapped_file);
+        total_writeback.append(new Date().getTime(), data.total_writeback);
+        total_pgpgin.append(new Date().getTime(), data.total_pgpgin);
+        total_pgpgout.append(new Date().getTime(), data.total_pgpgout);
+        total_pgfault.append(new Date().getTime(), data.total_pgfault);
+        total_pgmajfault.append(new Date().getTime(), data.total_pgmajfault);
+        total_inactive_anon.append(new Date().getTime(), data.total_inactive_anon);
+        total_active_anon.append(new Date().getTime(), data.total_active_anon);
+        total_inactive_file.append(new Date().getTime(), data.total_inactive_file);
+        total_active_file.append(new Date().getTime(), data.total_active_file);
+        total_unevictable.append(new Date().getTime(), data.total_unevictable);
     };
 
     ws.onclose = function(evt) {
