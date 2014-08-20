@@ -2,15 +2,25 @@ import threading
 
 
 class Dashboard:
+    def __init__(self, cgroup_root=None):
+        if None == cgroup_root:
+            cgroup_root = '/sys/fs/cgroup'
+        self.cgroup_root = cgroup_root
+        pass
+
     def __getMemoryInfo(self, container_id):
-        dest = "/sys/fs/cgroup/memory/docker/%s/memory.stat" % container_id
+        # dest = "/sys/fs/cgroup/memory/docker/%s/memory.stat" % container_id
+        dest = "%s/memory/docker/%s/memory.stat" % (self.cgroup_root, container_id)
         file = open(dest, 'r')
         return file.read()
 
     def __getCpuInfo(self, container_id):
-        dest = "/sys/fs/cgroup/cpuacct/docker/%s/cpuacct.stat" % container_id
+        dest = "%s/cpuacct/docker/%s/cpuacct.stat" % (self.cgroup_root, container_id)
         file = open(dest, 'r')
         return file.read()
+
+    def getInfo(self, container_id):
+        return self.__getCpuInfo(container_id) + self.__getMemoryInfo(container_id)
 
 
 if __name__ == '__main__':
