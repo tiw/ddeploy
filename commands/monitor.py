@@ -9,13 +9,13 @@ from pprint import pprint
 
 
 class Monitor(DockerBase):
-    def monitor_container(self, container_id):
+    def monitor_container(self, container_id, email_list):
         status = self.d.get_container_details(container_id)
         if status['State']['Running']:
             threading.Timer(10, self.monitor_container, [container_id]).start()
         else:
             text = "Container %s is down!" % container_id
-            self.send_email(text, ['ting.wang@ec3s.com'])
+            self.send_email(text, email_list)
 
     def monitor(self, group_name):
         pass

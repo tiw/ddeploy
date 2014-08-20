@@ -79,7 +79,7 @@ class BaseController(controller.CementBaseController):
     def monitor(self):
         container_id = self.app.pargs.container_id
         m = Monitor(self.app.config)
-        m.monitor_container(container_id)
+        m.monitor_container(container_id, self.app.config.get('base', 'WATCH_EMAILS'))
 
     @controller.expose(help='Remove containers in the group')
     def rm(self):
