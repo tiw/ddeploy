@@ -8,9 +8,14 @@ from web_handlers.page_handler import MainHandler
 from web_handlers.socket_handler import WebSocketHandler
 
 
+import os.path
+_dir = os.path.dirname(os.path.abspath(__file__))
+static_path = "%s/static" % _dir
+print static_path
 application = tornado.web.Application([
     (r'/', MainHandler),
     (r'/ws', WebSocketHandler),
+    (r'/static/(.*)', tornado.web.StaticFileHandler, {'path': './static/'}),
 ], debug=True)
 
 if __name__ == "__main__":
