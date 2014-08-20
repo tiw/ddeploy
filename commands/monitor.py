@@ -20,17 +20,15 @@ class Monitor(DockerBase):
             ids = ",".join(stopped_container_id)
             text = "Container %s are down!" % ids
             self.send_email(text, email_list)
-        else:
-            threading.Timer(10, self.monitor_containers, [container_ids, email_list]).start()
+        threading.Timer(10, self.monitor_containers, [container_ids, email_list]).start()
 
     def monitor_container(self, container_id, email_list):
         pprint(container_id)
         status = self.d.get_container_details(container_id)
-        if status['State']['Running']:
-            threading.Timer(10, self.monitor_container, [container_id, email_list]).start()
-        else:
+        if not status['State']['Running']:
             text = "Container %s is down!" % container_id
             self.send_email(text, email_list)
+        threading.Timer(10, self.monitor_container, [container_id, email_list]).start()
 
     def monitor(self, group_name):
         pass
