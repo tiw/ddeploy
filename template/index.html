@@ -3,10 +3,16 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title></title>
+    <script type="text/javascript" src="/static/smoothie.js"></script>
 </head>
 <body>
 {{ message }}
+<canvas id="dashboard" width="600" height="400"></canvas>
 <script>
+var smoothie = new SmoothieChart();
+smoothie.streamTo(document.getElementById("dashboard"));
+var line = new TimeSeries();
+smoothie.addTimeSeries(line);
 function run() {
     var ws = new WebSocket("ws://localhost:9908/ws");
     ws.onopen = function(evt) {
@@ -15,7 +21,8 @@ function run() {
     };
 
     ws.onmessage = function(evt) {
-        console.log(evt.data);
+        console.log(JSON.parse(evt.data).cache);
+        line.append(new Date().getTime(), JSON.parse(evt.data).cache);
     };
 
     ws.onclose = function(evt) {
