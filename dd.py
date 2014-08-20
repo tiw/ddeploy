@@ -57,6 +57,7 @@ class BaseController(controller.CementBaseController):
         arguments = [
             (['-g', '--group_name'], dict(action="store")),
             (['-c', '--container_id'], dict(action="store")),
+            (['-l', '--container_ids'], dict(action="store")),
             (['-v', '--verbose'], dict(action="store_true"))
         ]
 
@@ -77,9 +78,16 @@ class BaseController(controller.CementBaseController):
 
     @controller.expose(help='Monitoring the container')
     def monitor(self):
-        container_id = self.app.pargs.container_id
         m = Monitor(self.app.config)
-        m.monitor_container(container_id, self.app.config.get('base', 'WATCH_EMAILS'))
+        emails = self.app.config.get('base', 'WATCH_EMAILS')
+        if None != self.app.pargs.container_id:
+            container_id = self.app.pargs.container_id
+            m.monitor_container(container_id, emails)
+        elif None != self.app.pargs.container_ids:
+            container_ids = self.app.pargs.container_ids.split(',')
+            container_ids = [container_id.strip() for container_id in container_ids]
+            m.monitor_containers(container_ids, emails)
+
 
     @controller.expose(help='Remove containers in the group')
     def rm(self):

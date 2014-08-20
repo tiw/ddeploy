@@ -9,10 +9,25 @@ from pprint import pprint
 
 
 class Monitor(DockerBase):
+
+    def monitor_containers(self, container_ids, email_list):
+        stopped_container_id = []
+        for id in container_ids:
+            status = self.d.get_container_details(id)
+            if not status['State']['Running']:
+                stopped_container_id.append(id)
+        if len(stopped_container_id) > 0:
+            ids = ",".join(stopped_container_id)
+            text = "Container %s are down!" % ids
+            self.send_email(text, email_list)
+        else:
+            threading.Timer(10, self.monitor_containers, [container_ids, email_list]).start()
+
     def monitor_container(self, container_id, email_list):
+        pprint(container_id)
         status = self.d.get_container_details(container_id)
         if status['State']['Running']:
-            threading.Timer(10, self.monitor_container, [container_id]).start()
+            threading.Timer(10, self.monitor_container, [container_id, email_list]).start()
         else:
             text = "Container %s is down!" % container_id
             self.send_email(text, email_list)
