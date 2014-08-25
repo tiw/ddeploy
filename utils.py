@@ -41,3 +41,6 @@ class DockerUtils:
     def get_container_details(self, container_id):
         container = {"Id": container_id}
         return self.c.inspect_container(container)
+
+    def get_containers(self):
+        return self.c.containers(all=True)
