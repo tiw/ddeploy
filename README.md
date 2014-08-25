@@ -22,3 +22,9 @@
 5. redis
 6. mysql
 
+# start agent server
+```
+python rest_server.py runserver
+```
+
+这个server会给matherload提供host的docker的信息， 并且提供控制container的接口
