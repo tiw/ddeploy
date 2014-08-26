@@ -1,0 +1,4 @@
+flask==0.10.1
+flask-script==2.0.5
+flask-migrate==1.2.0
+docker-py==0.3.2
