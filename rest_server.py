@@ -3,16 +3,13 @@ from pprint import pprint
 
 __author__ = 'wangting'
 from flask import Flask, jsonify, Response
-from flask_script import Manager, Shell
 from utils import DockerUtils, parser_config
 
 app = Flask(__name__)
-app.debug = True
 import os.path
 _dir = os.path.dirname(os.path.abspath(__file__))
 config = parser_config(os.path.join(_dir, 'config.json'))
 
-manager = Manager(app=app)
 
 @app.route('/containers')
 def list_containers():
@@ -31,5 +28,4 @@ def start_container(container_id):
         return Response(status=500)
     return Response(status=200)
 
-
-manager.run()
+app.run()
