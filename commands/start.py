@@ -40,7 +40,6 @@ class Start(DockerBase):
         self.d.start_container(cron_container, binds=binds, links={self.config.get('base', 'gearman_name'): "gearman"})
         return cron_container
 
-
     def build_gearman(self):
         gearman_image = self.d.get_image(self.repo, 'gearman')
         gearman_container = self.d.create_container(

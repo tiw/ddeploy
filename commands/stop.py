@@ -33,10 +33,9 @@ class Stop(DockerBase):
         except Exception as e:
             pprint(e)
 
-
-
-
     def stop_and_rm(self, group_name):
         self.stop(group_name)
         self.rm(group_name)
-        pass
+
+    def restart(self, container_id):
+        self.d.restart_container({'Id': container_id})

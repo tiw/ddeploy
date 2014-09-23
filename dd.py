@@ -110,6 +110,11 @@ class BaseController(controller.CementBaseController):
         sc = Stop(self.app.config)
         sc.stop_and_rm(group_name)
 
+    @controller.expose(help="Restart an running container")
+    def restart(self):
+        container_id = self.app.pargs.container_id
+        sc = Stop(self.app.config)
+        sc.restart(container_id)
 
     @controller.expose(help='Start a group of containers')
     def start(self):

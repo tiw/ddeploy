@@ -35,6 +35,9 @@ class DockerUtils:
     def stop_container(self, container):
         self.c.stop(container)
 
+    def restart_container(self, container):
+        self.c.restart(container)
+
     def remove_container(self, container):
         self.c.remove_container(container)
 
