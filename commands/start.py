@@ -33,6 +33,14 @@ class Start(DockerBase):
         self.d.start_container(cli_container, binds=binds, links={self.config.get('base', 'gearman_name'): "gearman"})
         return cli_container
 
+    def build_cron(self):
+        cron_image = self.d.get_image("10.6.1.39:5000/niksun/base-cron", "latest")
+        cron_container = self.d.create_container(cron_image, detach=True, name=self.config.get('base', 'cron_name'))
+        binds = self.get_volume_mapping('cron')
+        self.d.start_container(cron_container, binds=binds, links={self.config.get('base', 'gearman_name'): "gearman"})
+        return cron_container
+
+
     def build_gearman(self):
         gearman_image = self.d.get_image(self.repo, 'gearman')
         gearman_container = self.d.create_container(

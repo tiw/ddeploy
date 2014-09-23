@@ -20,10 +20,9 @@ conf['DATA_DIR'] = '/data'
 
 # input
 conf["local_nginx_port"] = 8813
-conf["root_dir"] = 'oms_staging'
-conf["root_dir"] = 'walawa'
-conf["nginx_config_dir"] = ''
+conf["root_dir"] = 'pdm_staging'
 conf['DB_FILE'] = './test.db'
+conf['app_name'] = 'pdm'
 
 
 root_dir = conf['root_dir']
@@ -31,21 +30,31 @@ conf['fpm_name'] = root_dir.replace('_', '-') + u'-fpm'
 conf['nginx_name'] = root_dir.replace('_', '-') + u'-nginx'
 conf['gearman_name'] = root_dir.replace('_', '-') + u'-gearman'
 conf['cli_name'] = root_dir.replace('_', '-') + u'-cli'
+conf['cron_name'] = root_dir.replace('_', '-') + u'-cron'
 log_dir = conf['DATA_DIR'] + '/logs/' + root_dir
 src_dir = conf['DATA_DIR'] + '/src/' + root_dir
 
+conf["nginx_config_dir"] = src_dir + '/deployment/config/nginx/sites_enabled'
+
 conf['volumes'] = {
     'fpm': [
-        (src_dir, '/data/www/oms'),
-        (log_dir, '/data/logs/oms')
+        (src_dir, '/data/www/' + conf["root_dir"]),
+        (log_dir, '/data/logs/' + conf["app_name"]),
+        (conf['DATA_DIR'] + '/images' + '/' + root_dir, '/data/images/pdm/')
     ],
     'nginx': [
-        (src_dir, '/data/www/oms'),
+        (src_dir, '/data/www/' + conf["root_dir"]),
         (src_dir + '/' + conf['nginx_config_dir'], '/etc/nginx/sites-enabled'),
-        (log_dir, '/data/logs/oms')
+        (log_dir, '/data/logs/' + conf["app_name"]),
+        (conf['DATA_DIR'] + '/images' + '/' + root_dir, '/data/images/pdm/')
     ],
     'cli': [
-        (src_dir + root_dir, '/data/www/oms')
+        (src_dir + root_dir, '/data/www/' + conf["app_name"])
+    ],
+    'cron': [
+        (src_dir, '/data/src'),
+        (log_dir, '/data/logs'),
+        (conf['DATA_DIR'] + '/etc/crontab', '/data/etc/crontab')
     ]
 }
 
@@ -97,7 +106,7 @@ class BaseController(controller.CementBaseController):
 
     @controller.expose(help='Start a group of containers')
     def start(self):
-        start_list = ['gearman']#, 'fpm', 'nginx', 'cli']
+        start_list = ['gearman', 'fpm', 'nginx', 'cron']
         db = Db(self.app.config.get('base', 'DB_FILE'))
         containers = []
         start = Start(self.app.config)
@@ -120,6 +129,10 @@ class BaseController(controller.CementBaseController):
                     cli_container_id = start.build_cli()
                     containers.append(cli_container_id)
                     db.persist_system(root_dir, [(cli_container_id, self.app.config.get('base', 'cli_name'))])
+                elif app_name == 'cron':
+                    cron_container_id = start.build_cron()
+                    containers.append(cron_container_id)
+                    db.persist_system(root_dir, [(cron_container_id, self.app.config.get('base', 'cron_name'))])
         except Exception as e:
             for container in containers:
                 d.stop_container(container)
