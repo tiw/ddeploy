@@ -34,16 +34,16 @@ conf['cron_name'] = root_dir.replace('_', '-') + u'-cron'
 log_dir = conf['DATA_DIR'] + '/logs/' + root_dir
 src_dir = conf['DATA_DIR'] + '/src/' + root_dir
 
-conf["nginx_config_dir"] = src_dir + '/deployment/config/nginx/sites_enabled'
+conf["nginx_config_dir"] = '/deployment/config/nginx/sites_enabled'
 
 conf['volumes'] = {
     'fpm': [
-        (src_dir, '/data/www/' + conf["root_dir"]),
+        (src_dir, '/data/www/' + conf["app_name"]),
         (log_dir, '/data/logs/' + conf["app_name"]),
         (conf['DATA_DIR'] + '/images' + '/' + root_dir, '/data/images/pdm/')
     ],
     'nginx': [
-        (src_dir, '/data/www/' + conf["root_dir"]),
+        (src_dir, '/data/www/' + conf["app_name"]),
         (src_dir + '/' + conf['nginx_config_dir'], '/etc/nginx/sites-enabled'),
         (log_dir, '/data/logs/' + conf["app_name"]),
         (conf['DATA_DIR'] + '/images' + '/' + root_dir, '/data/images/pdm/')
@@ -104,8 +104,16 @@ class BaseController(controller.CementBaseController):
         sc = Stop(self.app.config)
         sc.rm(group_name)
 
+    @controller.expose(help="Stop and remove container in the group")
+    def sr(self):
+        group_name = self.app.pargs.group_name
+        sc = Stop(self.app.config)
+        sc.stop_and_rm(group_name)
+
+
     @controller.expose(help='Start a group of containers')
     def start(self):
+        group_name = self.app.pargs.group_name
         start_list = ['gearman', 'fpm', 'nginx', 'cron']
         db = Db(self.app.config.get('base', 'DB_FILE'))
         containers = []
@@ -116,23 +124,23 @@ class BaseController(controller.CementBaseController):
                 if app_name == 'gearman':
                     gearman_container_id = start.build_gearman()
                     containers.append(gearman_container_id)
-                    db.persist_system(root_dir, [(gearman_container_id, self.app.config.get('base', 'gearman_name'))])
+                    db.persist_system(group_name, [(gearman_container_id, self.app.config.get('base', 'gearman_name'))])
                 elif app_name == 'fpm':
                     fpm_container_id = start.build_fpm()
                     containers.append(fpm_container_id)
-                    db.persist_system(root_dir, [(fpm_container_id, self.app.config.get('base', 'fpm_name'))])
+                    db.persist_system(group_name, [(fpm_container_id, self.app.config.get('base', 'fpm_name'))])
                 elif app_name == 'nginx':
                     nginx_container_id = start.build_nginx()
                     containers.append(nginx_container_id)
-                    db.persist_system(root_dir, [(nginx_container_id, self.app.config.get('base', 'nginx_name'))])
+                    db.persist_system(group_name, [(nginx_container_id, self.app.config.get('base', 'nginx_name'))])
                 elif app_name == 'cli':
                     cli_container_id = start.build_cli()
                     containers.append(cli_container_id)
-                    db.persist_system(root_dir, [(cli_container_id, self.app.config.get('base', 'cli_name'))])
+                    db.persist_system(group_name, [(cli_container_id, self.app.config.get('base', 'cli_name'))])
                 elif app_name == 'cron':
                     cron_container_id = start.build_cron()
                     containers.append(cron_container_id)
-                    db.persist_system(root_dir, [(cron_container_id, self.app.config.get('base', 'cron_name'))])
+                    db.persist_system(group_name, [(cron_container_id, self.app.config.get('base', 'cron_name'))])
         except Exception as e:
             for container in containers:
                 d.stop_container(container)
